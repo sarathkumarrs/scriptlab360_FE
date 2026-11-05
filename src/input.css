@@ -1,0 +1,274 @@
+@import "tailwindcss";
+
+/* Tailwind scans these files for class names when you rebuild app.css. */
+@source "../*.html";
+@source "../static/js/*.js";
+
+/* The screenwriter's ruled notebook: ink-blue writing, a red margin for notes,
+   highlighter for the evidence those notes point at. */
+:root {
+  --font-anek: "Anek Latin";
+  --font-courier: "Courier Prime";
+  --bg: #e9edf5; /* the desk the page sits on */
+  --bg-2: #f3f5fa; /* chrome, sidebars */
+  --panel: #ffffff;
+  --line: #d9dfeb;
+  --line-2: #b9c3d8;
+  --fg: #17214f; /* ink */
+  --muted: #4b5575; /* graphite */
+  --dim: #6e7793;
+  --accent: #22318c; /* ink, for primary actions */
+  --accent-2: #d23f3a; /* margin red, for notes */
+  --warn: #b7791f;
+  --good: #2f7d4f;
+  --bad: #c2362f;
+  --highlight: #ffe45c;
+  --rule: #cbd6ee;
+  --paper: #ffffff;
+  --ink: #111633;
+  --screenplay: var(--font-courier), "Noto Sans Tamil", "Noto Sans Telugu", "Noto Sans Malayalam", "Noto Sans Kannada",
+    "Noto Sans Devanagari", "Noto Sans Bengali", "Noto Sans Gujarati", "Noto Sans Gurmukhi", "Noto Sans Oriya", monospace;
+  --indic-display: "Anek Malayalam", "Anek Tamil", "Anek Telugu", "Anek Kannada", "Anek Devanagari", "Anek Bangla",
+    "Anek Gujarati", "Anek Gurmukhi", "Anek Odia";
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-bg-2: var(--bg-2);
+  --color-panel: var(--panel);
+  --color-line: var(--line);
+  --color-line-2: var(--line-2);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-dim: var(--dim);
+  --color-accent: var(--accent);
+  --color-accent-2: var(--accent-2);
+  --color-warn: var(--warn);
+  --color-good: var(--good);
+  --color-bad: var(--bad);
+  --color-highlight: var(--highlight);
+  --color-rule: var(--rule);
+  --color-paper: var(--paper);
+  --color-ink: var(--ink);
+  --font-sans: var(--font-anek), var(--indic-display), system-ui, sans-serif;
+  --font-mono: var(--font-courier), ui-monospace, monospace;
+  --font-display: var(--font-anek), var(--indic-display), system-ui, sans-serif;
+}
+
+html { color-scheme: light; }
+body { background: var(--bg); color: var(--fg); font-family: var(--font-anek), var(--indic-display), system-ui, sans-serif; }
+/* Display type is Anek narrowed: film-title lettering rather than a second family. */
+.font-display { font-stretch: 78%; font-weight: 600; letter-spacing: -0.01em; }
+button, a, select, input { transition-property: color, background-color, border-color, opacity, transform; transition-duration: 160ms; }
+button, summary { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.builder-input { margin-top: .35rem; width: 100%; border-radius: .5rem; border: 1px solid var(--line); background: var(--panel); padding: .65rem .7rem; color: var(--fg); font-size: .875rem; outline: none; }
+.builder-input:focus { border-color: var(--accent); }
+::selection { background: color-mix(in oklab, var(--highlight) 70%, transparent); }
+
+/* ---------- Screenplay page (editor) ---------- */
+.sp-paper {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--screenplay);
+  font-size: 12pt;
+  line-height: normal; /* per-line: Indic glyphs get the height they need */
+  width: 8.27in;
+  max-width: 100%;
+  min-height: 11.69in;
+  padding: 1in 1in 1in 1.5in;
+  box-shadow: 0 1px 2px rgb(23 33 79 / 0.08), 0 18px 40px -24px rgb(23 33 79 / 0.35);
+}
+@media (max-width: 820px) {
+  .sp-paper { padding: 0.6in 0.35in; font-size: 11pt; min-height: 70vh; }
+  .sp-paper .sp-block[data-kind="character"] { margin-left: 30% !important; }
+  .sp-paper .sp-block[data-kind="dialogue"], .sp-paper .sp-block[data-kind="song"] { margin-left: 12% !important; width: auto !important; }
+  .sp-paper .sp-block[data-kind="parenthetical"] { margin-left: 20% !important; width: auto !important; }
+}
+.sp-paper .ProseMirror { outline: none; }
+.sp-block { margin: 0; min-height: 1.25em; white-space: pre-wrap; position: relative; }
+.sp-block + .sp-block { margin-top: 1.25em; }
+.sp-block[data-kind="sceneHeading"] { text-transform: uppercase; font-weight: 700; margin-top: 2.5em; }
+.sp-block[data-kind="sceneHeading"]:first-child { margin-top: 0; }
+.sp-block[data-kind="character"] { margin-left: 2.2in; text-transform: uppercase; }
+.sp-block[data-kind="dialogue"] { margin-left: 1in; width: 3.5in; }
+.sp-block[data-kind="parenthetical"] { margin-left: 1.6in; width: 2.2in; }
+.sp-block[data-kind="character"] + .sp-block[data-kind="dialogue"],
+.sp-block[data-kind="character"] + .sp-block[data-kind="parenthetical"],
+.sp-block[data-kind="parenthetical"] + .sp-block[data-kind="dialogue"],
+.sp-block[data-kind="dialogue"] + .sp-block[data-kind="parenthetical"] { margin-top: 0; }
+.sp-block[data-kind="transition"] { text-align: right; text-transform: uppercase; }
+.sp-block[data-kind="song"] { margin-left: 1in; width: 3.5in; font-style: italic; }
+.sp-block[data-kind="song"]::before {
+  content: "♪"; position: absolute; left: -1.5em; color: var(--accent-2); font-style: normal;
+}
+.sp-block[data-dual]::after {
+  content: "DUAL"; position: absolute; right: -4.5em; top: 0; font: 600 9px var(--font-anek); color: var(--dim); letter-spacing: .1em;
+}
+.sp-block.is-empty::before {
+  content: attr(data-placeholder); color: #a3abc2; pointer-events: none; position: absolute; font-weight: 400; text-transform: none;
+}
+.sp-block.is-current { background: linear-gradient(90deg, transparent, rgb(255 228 92 / 0.18) 20%, rgb(255 228 92 / 0.18) 80%, transparent); }
+
+/* ---------- Landing ---------- */
+/* A ruled notebook page: blue rules, and a red margin line on wider screens. */
+.ruled {
+  position: relative;
+  background-color: var(--paper);
+  background-image: linear-gradient(to bottom, transparent 31px, color-mix(in oklab, var(--rule) 70%, transparent) 31px, color-mix(in oklab, var(--rule) 70%, transparent) 32px);
+  background-size: 100% 32px;
+}
+@media (min-width: 640px) {
+  .ruled::before {
+    content: ""; position: absolute; top: 0; bottom: 0;
+    /* Full-width sections line up with the centred content; cards set their own. */
+    left: var(--margin-line, max(3.25rem, calc((100vw - 72rem) / 2 + 3.25rem)));
+    border-left: 2px solid color-mix(in oklab, var(--accent-2) 55%, transparent);
+  }
+}
+
+.hero-line { font-family: var(--indic-display), var(--font-anek); font-size: clamp(2.5rem, 6.4vw, 5.6rem); font-weight: 600; font-stretch: 88%; line-height: 1.3; }
+.hero-word { animation: commit 420ms cubic-bezier(.2, .8, .2, 1) both; }
+.hero-typing { font-family: var(--font-courier); font-size: 0.5em; font-weight: 400; color: var(--muted); align-self: center; }
+.hero-caret { display: inline-block; width: 2px; height: 0.9em; margin-left: 2px; vertical-align: -0.1em; background: var(--accent-2); animation: caret 1s steps(1) infinite; }
+.hero-line > .hero-caret { height: 0.55em; align-self: center; }
+@keyframes commit { from { opacity: 0; transform: translateY(0.12em); } }
+@keyframes caret { 50% { opacity: 0; } }
+
+/* A screenplay page excerpt, set to real proportions. */
+.script-sheet {
+  position: relative; max-width: 42rem; background: var(--paper); color: var(--ink);
+  font-family: var(--screenplay); font-size: clamp(13px, 1.55vw, 16px); line-height: normal;
+  padding: 3.2em 3em 3.2em 4.2em;
+  box-shadow: 0 1px 2px rgb(23 33 79 / 0.08), 0 24px 48px -28px rgb(23 33 79 / 0.4);
+  border: 1px solid var(--line);
+}
+/* Every rule is scoped under .script-sheet so the element reset can't outrank the indents. */
+.script-sheet > p { margin: 0; }
+.script-sheet > p + p { margin-top: 1.1em; }
+.script-sheet > .sheet-page-number { position: absolute; top: 1.6em; right: 2.4em; margin: 0; }
+.script-sheet > .sheet-heading { font-weight: 700; margin-top: 0; }
+.script-sheet > .sheet-cue { margin-left: 38%; }
+.script-sheet > .sheet-paren { margin-left: 28%; }
+.script-sheet > .sheet-dialogue { margin-left: 17%; max-width: 62%; }
+.script-sheet > .sheet-cue + .sheet-dialogue,
+.script-sheet > .sheet-cue + .sheet-paren,
+.script-sheet > .sheet-paren + .sheet-dialogue { margin-top: 0; }
+.script-sheet > .sheet-transition { text-align: right; }
+
+/* Highlighter marks for the evidence behind a note. */
+.evidence {
+  color: inherit; padding: 0.05em 0.1em; margin: 0 -0.1em; border-radius: 2px;
+  background: color-mix(in oklab, var(--highlight) 55%, transparent);
+  box-decoration-break: clone; -webkit-box-decoration-break: clone;
+  transition: background-color 160ms, box-shadow 160ms;
+}
+.evidence[data-active] { background: var(--highlight); box-shadow: 0 2px 0 var(--accent-2); }
+.margin-note { border-left: 2px solid transparent; padding-left: 0.9rem; margin-left: -0.9rem; }
+.margin-note[aria-pressed="true"], .margin-note:hover { border-left-color: var(--accent-2); }
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-word, .hero-caret { animation: none; }
+}
+
+/* Chapters and cards rise into place as they scroll in, so a report reads in order.
+   Browsers without view timelines, and anyone asking for less motion, get them static. */
+@keyframes reveal { from { opacity: 0; transform: translateY(24px); } }
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .reveal { animation: reveal linear both; animation-timeline: view(); animation-range: entry 0% entry 35%; }
+  }
+}
+
+@media (max-width: 767px) {
+  .report-panel { position: fixed; inset: 57px 0 28px 0; z-index: 20; border-left: 0; }
+}
+
+/* ---------- Story panel ---------- */
+.story-panel { width: 30rem; max-width: 100%; flex-shrink: 0; overflow-y: auto; border-left: 1px solid var(--line); background: var(--bg-2); }
+@media (max-width: 767px) {
+  .story-panel { position: fixed; inset: 0; z-index: 40; width: 100%; border-left: 0; }
+}
+/* Beat board: each beat is an index card; the interval is the one that stands out. */
+.beat-card { border: 1px solid var(--line); border-radius: 0.75rem; background: var(--panel); padding: 0.6rem 0.8rem 0.7rem; }
+.beat-interval { border-color: var(--ink); box-shadow: inset 4px 0 0 var(--ink); }
+.beat-interval select { color: var(--ink); font-weight: 600; }
+/* Continuity notes read like red-pen notes in a margin. */
+.margin-note-card { border-left: 2px solid var(--accent-2); padding: 0.1rem 0 0.1rem 0.9rem; }
+
+/* ---------- Speak panel ---------- */
+.rec-dot { width: 0.7rem; height: 0.7rem; border-radius: 999px; background: #fff; animation: rec 1.2s ease-in-out infinite; }
+@keyframes rec { 50% { opacity: 0.35; } }
+.mic-icon { width: 0.75rem; height: 1.1rem; border: 2px solid currentColor; border-radius: 999px; position: relative; }
+.mic-icon::after { content: ""; position: absolute; left: 50%; bottom: -0.45rem; width: 2px; height: 0.35rem; background: currentColor; transform: translateX(-50%); }
+@media (prefers-reduced-motion: reduce) { .rec-dot { animation: none; } }
+/* A scene preview at panel width: the page's indents as proportions. */
+.sp-preview { background: var(--paper); color: var(--ink); font-family: var(--screenplay); font-size: 13px; line-height: normal; padding: 1.2rem 1rem; border: 1px solid var(--line); border-radius: 0.5rem; }
+.sp-preview .sp-block[data-kind="sceneHeading"] { margin-top: 0; }
+.sp-preview .sp-block[data-kind="character"] { margin-left: 36%; }
+.sp-preview .sp-block[data-kind="dialogue"], .sp-preview .sp-block[data-kind="song"] { margin-left: 14%; width: auto; max-width: 70%; }
+.sp-preview .sp-block[data-kind="parenthetical"] { margin-left: 24%; width: auto; }
+
+/* ---------- Report showcase (landing) ----------
+   Its own palette, from the reference image: charcoal, cream type, teal hairlines,
+   and three pillar colours with fixed meanings (green works, amber needs a look,
+   blue is measured data). Scoped here so the notebook pages are untouched. */
+.screening {
+  --sr-bg: #131412;
+  --sr-bg-2: #1b1c19;
+  --sr-line: #2e2f2a;
+  --sr-cream: #ede6d6;
+  --sr-muted: #aaa497;
+  --sr-dim: #8a857b;
+  --sr-teal: #6fa89b;
+  --sr-green: #8fae72;
+  --sr-amber: #d7a05a;
+  --sr-blue: #86a6c8;
+  --sr-ember: #d07b58;
+  background:
+    radial-gradient(60rem 40rem at 12% -10%, rgb(143 174 114 / 0.08), transparent 60%),
+    radial-gradient(50rem 36rem at 60% 20%, rgb(215 160 90 / 0.07), transparent 60%),
+    radial-gradient(50rem 40rem at 100% 60%, rgb(134 166 200 / 0.08), transparent 60%),
+    var(--sr-bg);
+  color: var(--sr-cream);
+  color-scheme: dark;
+}
+/* A second screening block that continues the first without restarting its glow. */
+.screening.sr-flat { background: var(--sr-bg); }
+.screening :focus-visible { outline-color: var(--sr-cream); }
+.screening ::selection { background: rgb(215 160 90 / 0.35); }
+.sr-display { font-family: var(--font-anek), var(--indic-display), sans-serif; font-stretch: 76%; font-weight: 600; line-height: 0.98; letter-spacing: -0.015em; color: var(--sr-cream); }
+.sr-label { display: flex; align-items: center; gap: 1rem; color: var(--sr-muted); font-size: 15px; }
+.sr-label-rule { width: 4.5rem; height: 1px; background: var(--sr-teal); }
+.sr-card { background: color-mix(in oklab, var(--sr-bg-2) 85%, transparent); border: 1px solid var(--sr-line); border-radius: 1rem; }
+.sr-rail { border-left: 1px solid var(--sr-line); padding-left: 0.9rem; }
+.screening summary { list-style: none; }
+.screening summary::-webkit-details-marker { display: none; }
+.screening details[open] summary span:first-child { color: var(--sr-teal); }
+.sr-quote { font-style: italic; }
+.sr-toolbar { background: color-mix(in oklab, var(--sr-bg) 92%, transparent); backdrop-filter: blur(8px); }
+@media (min-width: 768px) { .sr-toolbar { position: sticky; top: 0; z-index: 10; } }
+
+/* Printing a report: same layout in ink on white, without the page chrome. */
+@media print {
+  .screening {
+    --sr-bg: #ffffff;
+    --sr-bg-2: #f4f4f1;
+    --sr-line: #d9d9d2;
+    --sr-cream: #16171a;
+    --sr-muted: #3d3f44;
+    --sr-dim: #5f6168;
+    --sr-teal: #2f6f63;
+    --sr-green: #3f7a3a;
+    --sr-amber: #9a6214;
+    --sr-blue: #3b6391;
+    --sr-ember: #a8452a;
+    background: #fff !important;
+    color-scheme: light;
+  }
+  .sr-toolbar, .sr-rail { display: none !important; }
+  .reveal { animation: none !important; }
+  .sr-chapter { break-before: auto; }
+  .sr-card, .sr-chapter figure, .sr-chapter tr { break-inside: avoid; }
+  @page { margin: 14mm; }
+}

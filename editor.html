@@ -1,0 +1,635 @@
+<!doctype html>
+<html lang="en" class="h-full antialiased">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kaattu · Scriptlab360</title>
+  <meta name="description" content="Screenplay editor">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anek+Latin:wdth,wght@75..125,100..800&amp;family=Courier+Prime:wght@400;700&amp;family=Noto+Sans+Tamil:wght@400;700&amp;family=Noto+Sans+Telugu:wght@400;700&amp;family=Noto+Sans+Malayalam:wght@400;700&amp;family=Noto+Sans+Kannada:wght@400;700&amp;family=Noto+Sans+Devanagari:wght@400;700&amp;family=Noto+Sans+Bengali:wght@400;700&amp;family=Noto+Sans+Gujarati:wght@400;700&amp;family=Noto+Sans+Gurmukhi:wght@400;700&amp;family=Noto+Sans+Oriya:wght@400;700&amp;family=Anek+Malayalam:wdth,wght@75..125,300..700&amp;family=Anek+Tamil:wdth,wght@75..125,300..700&amp;family=Anek+Telugu:wdth,wght@75..125,300..700&amp;family=Anek+Kannada:wdth,wght@75..125,300..700&amp;family=Anek+Devanagari:wdth,wght@75..125,300..700&amp;family=Anek+Bangla:wdth,wght@75..125,300..700&amp;family=Anek+Gujarati:wdth,wght@75..125,300..700&amp;family=Anek+Gurmukhi:wdth,wght@75..125,300..700&amp;family=Anek+Odia:wdth,wght@75..125,300..700&amp;display=swap">
+  <link rel="stylesheet" href="static/css/app.css">
+  <link rel="stylesheet" href="static/css/custom.css">
+</head>
+<body class="h-full">
+<div class="flex h-dvh flex-col bg-bg">
+  <!-- Toolbar -->
+  <header class="flex flex-wrap items-center gap-2 border-b border-line bg-bg-2 px-3 py-2 text-sm">
+    <a href="scripts.html" class="inline-flex items-center rounded px-2 py-1" title="All scripts" aria-label="Scriptlab360: all scripts"><img src="static/images/logo.png" alt="Scriptlab360" class="h-7 w-auto mix-blend-multiply"></a>
+    <input value="Kaattu" class="min-w-0 flex-1 rounded bg-transparent px-2 py-1 text-fg outline-none hover:bg-panel focus:bg-panel sm:max-w-xs" aria-label="Script title">
+    <div class="flex flex-wrap items-center gap-2">
+      <select id="element-select" class="rounded border border-line bg-panel px-2 py-1" aria-label="Element" title="Element (Tab)"><option value="sceneHeading">Scene Heading ⌘1</option><option value="action">Action ⌘2</option><option value="character">Character ⌘3</option><option value="dialogue">Dialogue ⌘4</option><option value="parenthetical">Parenthetical ⌘5</option><option value="transition">Transition ⌘6</option><option value="song">Song ⌘7</option></select>
+      <select class="rounded border border-line bg-panel px-2 py-1" aria-label="Writing language" title="Type in English, write in this language"><option value="en">English</option><option value="ta">தமிழ் · Tamil</option><option value="te">తెలుగు · Telugu</option><option value="ml" selected>മലയാളം · Malayalam</option><option value="kn">ಕನ್ನಡ · Kannada</option><option value="hi">हिन्दी · Hindi</option><option value="bn">বাংলা · Bengali</option><option value="gu">ગુજરાતી · Gujarati</option><option value="pa">ਪੰਜਾਬੀ · Punjabi</option><option value="or">ଓଡ଼ିଆ · Odia</option></select>
+      <label class="flex items-center gap-1 text-muted" title="Keep character cues in English letters"><input type="checkbox" checked> Names in English</label>
+      <details class="relative">
+        <summary class="cursor-pointer list-none rounded border border-line px-3 py-1 hover:border-line-2">Export</summary>
+        <div class="absolute right-0 z-20 mt-1 w-56 rounded-lg border border-line bg-panel p-1 shadow-xl">
+          <button class="block w-full rounded px-3 py-2 text-left hover:bg-bg-2">PDF</button>
+          <button class="block w-full rounded px-3 py-2 text-left hover:bg-bg-2">Print…</button>
+          <button class="block w-full rounded px-3 py-2 text-left hover:bg-bg-2">Final Draft (.fdx)</button>
+          <button class="block w-full rounded px-3 py-2 text-left hover:bg-bg-2">Fountain</button>
+        </div>
+      </details>
+      <button data-save-draft class="rounded border border-line px-3 py-1 hover:border-line-2">Save draft</button>
+      <button data-panel-toggle="drafts" aria-pressed="false" class="rounded border border-line px-3 py-1 hover:border-line-2 aria-pressed:border-accent aria-pressed:text-accent">Drafts · 3</button>
+      <button data-panel-toggle="report" aria-pressed="false" class="rounded bg-accent/90 px-3 py-1 font-medium text-bg hover:bg-accent aria-pressed:bg-accent">Analyze</button>
+      <button data-panel-toggle="structure" aria-pressed="false" class="rounded border border-line px-3 py-1 hover:border-line-2 aria-pressed:border-accent aria-pressed:text-accent">Structure</button>
+      <button data-panel-toggle="story" aria-pressed="false" class="rounded border border-line px-3 py-1 hover:border-line-2 aria-pressed:border-accent aria-pressed:text-accent">Story</button>
+      <button data-panel-toggle="voice" aria-pressed="false" class="rounded border border-line px-3 py-1 hover:border-line-2 aria-pressed:border-accent aria-pressed:text-accent">Speak</button>
+    </div>
+  </header>
+
+  <div class="flex min-h-0 flex-1">
+    <!-- Scene navigator -->
+    <nav id="scene-nav" class="hidden w-64 shrink-0 overflow-y-auto border-r border-line bg-bg-2 md:block" aria-label="Scenes">
+      <div class="sticky top-0 flex items-center justify-between bg-bg-2 px-4 py-3 text-xs text-dim">
+        <span>Scenes (5)</span>
+        <button id="scene-hide" class="hover:text-fg" aria-label="Hide scenes">⟨</button>
+      </div>
+      <ol class="px-2 pb-6">
+        <li>
+          <button data-goto="sc-1" class="group flex w-full items-baseline gap-2 rounded px-2 py-1.5 text-left hover:bg-panel">
+            <span class="w-6 shrink-0 text-right font-mono text-xs text-dim">1</span>
+            <span class="min-w-0 flex-1 truncate text-[13px] text-muted group-hover:text-fg">EXT. JETTY - DUSK</span>
+            <span class="shrink-0 font-mono text-[10px] text-dim">p1</span>
+          </button>
+        </li>
+        <li>
+          <button data-goto="sc-2" class="group flex w-full items-baseline gap-2 rounded px-2 py-1.5 text-left hover:bg-panel">
+            <span class="w-6 shrink-0 text-right font-mono text-xs text-dim">2</span>
+            <span class="min-w-0 flex-1 truncate text-[13px] text-muted group-hover:text-fg">INT. RAVI’S TEA SHOP - NIGHT</span>
+            <span class="shrink-0 font-mono text-[10px] text-dim">p6</span>
+          </button>
+        </li>
+        <li>
+          <button data-goto="sc-3" class="group flex w-full items-baseline gap-2 rounded px-2 py-1.5 text-left hover:bg-panel">
+            <span class="w-6 shrink-0 text-right font-mono text-xs text-dim">3</span>
+            <span class="min-w-0 flex-1 truncate text-[13px] text-muted group-hover:text-fg"><span class="mr-1 text-accent-2">♪</span>EXT. BACKWATERS - NIGHT</span>
+            <span class="shrink-0 font-mono text-[10px] text-dim">p21</span>
+          </button>
+        </li>
+        <li>
+          <button data-goto="sc-4" class="group flex w-full items-baseline gap-2 rounded px-2 py-1.5 text-left hover:bg-panel">
+            <span class="w-6 shrink-0 text-right font-mono text-xs text-dim">4</span>
+            <span class="min-w-0 flex-1 truncate text-[13px] text-muted group-hover:text-fg">INT. TEA SHOP - LATER</span>
+            <span class="shrink-0 font-mono text-[10px] text-dim">p62</span>
+          </button>
+        </li>
+        <li>
+          <button data-goto="sc-5" class="group flex w-full items-baseline gap-2 rounded px-2 py-1.5 text-left hover:bg-panel">
+            <span class="w-6 shrink-0 text-right font-mono text-xs text-dim">5</span>
+            <span class="min-w-0 flex-1 truncate text-[13px] text-muted group-hover:text-fg">EXT. FERRY GHAT - NIGHT</span>
+            <span class="shrink-0 font-mono text-[10px] text-dim">p84</span>
+          </button>
+        </li>
+      </ol>
+    </nav>
+    <button id="scene-show" hidden class="hidden w-6 shrink-0 border-r border-line text-dim hover:text-fg md:block" aria-label="Show scenes">⟩</button>
+
+    <!-- Paper -->
+    <main class="relative min-w-0 flex-1 overflow-y-auto px-2 py-6 sm:px-6 sm:py-10">
+      <div class="sp-paper mx-auto" id="paper" lang="ml">
+      <p id="sc-1" class="sp-block" contenteditable="plaintext-only" data-kind="sceneHeading" data-placeholder="INT. PLACE - DAY" spellcheck="false">EXT. JETTY - DUSK</p>
+      <p class="sp-block" contenteditable="plaintext-only" data-kind="action" data-placeholder="What we see and hear" spellcheck="false">Monsoon light on black water. GAURI, soaked, holds a blue envelope over a burning lamp. The last ferry waits with its engine running.</p>
+      <p class="sp-block" contenteditable="plaintext-only" data-kind="character" data-placeholder="NAME" spellcheck="false">GAURI</p>
+      <p class="sp-block" contenteditable="plaintext-only" data-kind="dialogue" data-placeholder="What they say" spellcheck="false">ഞാൻ വരില്ല എന്ന് പറഞ്ഞിട്ടില്ലല്ലോ.</p>
+      <p id="sc-2" class="sp-block" contenteditable="plaintext-only" data-kind="sceneHeading" data-placeholder="INT. PLACE - DAY" spellcheck="false">INT. RAVI’S TEA SHOP - NIGHT</p>
+      <p class="sp-block" contenteditable="plaintext-only" data-kind="action" data-placeholder="What we see and hear" spellcheck="false">Rain on the tin roof. RAVI counts the day’s coins into a steel tray. A cup sits alone on the top shelf.</p>
+      <p class="sp-block" contenteditable="plaintext-only" data-kind="character" data-placeholder="NAME" spellcheck="false">RAVI</p>
+      <p class="sp-block" contenteditable="plaintext-only" data-kind="parenthetical" data-placeholder="(how)" spellcheck="false">(not looking up)</p>
+      <p class="sp-block" contenteditable="plaintext-only" data-kind="dialogue" data-placeholder="What they say" spellcheck="false">I waited at the station till dawn. Where were you?</p>
+      <p id="sc-3" class="sp-block" contenteditable="plaintext-only" data-kind="sceneHeading" data-placeholder="INT. PLACE - DAY" spellcheck="false">EXT. BACKWATERS - NIGHT</p>
+      <p class="sp-block" contenteditable="plaintext-only" data-kind="song" data-placeholder="The song, and what it does" spellcheck="false">A low boat song rises. Ravi and Gauri, years younger, row through a field of lamps.</p>
+      <p id="sc-4" class="sp-block" contenteditable="plaintext-only" data-kind="sceneHeading" data-placeholder="INT. PLACE - DAY" spellcheck="false">INT. TEA SHOP - LATER</p>
+      <p class="sp-block" contenteditable="plaintext-only" data-kind="action" data-placeholder="What we see and hear" spellcheck="false">She drops the envelope into the coin tray. Ravi reads the name on it, and stops counting.</p>
+      <p class="sp-block" contenteditable="plaintext-only" data-kind="transition" data-placeholder="CUT TO:" spellcheck="false">CUT TO:</p>
+      <p id="sc-5" class="sp-block" contenteditable="plaintext-only" data-kind="sceneHeading" data-placeholder="INT. PLACE - DAY" spellcheck="false">EXT. FERRY GHAT - NIGHT</p>
+      <p class="sp-block" contenteditable="plaintext-only" data-kind="action" data-placeholder="What we see and hear" spellcheck="false">The rope drops. On shore, a headlight cuts through the rain.</p>
+      </div>
+    </main>
+
+    <aside data-panel="drafts" hidden class="w-80 shrink-0 overflow-y-auto border-l border-line bg-bg-2 p-4 max-md:fixed max-md:inset-0 max-md:z-40 max-md:w-full">
+      <div class="mb-3 flex items-center justify-between">
+        <h2 class="font-display text-2xl">Drafts</h2>
+        <button data-panel-close class="text-sm text-muted hover:text-fg md:hidden">Close</button>
+      </div>
+      <p class="mb-4 text-xs text-dim">Every change autosaves. Named drafts are kept forever; autosaves keep the last 30.</p>
+      <ul id="draft-list" class="space-y-2">
+        <li class="rounded border border-line p-3"><div class="flex items-baseline justify-between gap-2"><span class="font-medium">Producer draft</span><button class="text-xs text-accent hover:underline">Restore</button></div><div class="text-xs text-dim">3 Nov 2026, 9:10 pm · 109 pp</div></li>
+        <li class="rounded border border-line p-3"><div class="flex items-baseline justify-between gap-2"><span class="font-medium">After the table read</span><button class="text-xs text-accent hover:underline">Restore</button></div><div class="text-xs text-dim">29 Oct 2026, 4:30 pm · 104 pp</div></li>
+        <li class="rounded border border-line p-3"><div class="flex items-baseline justify-between gap-2"><span class="text-muted">Autosave</span><button class="text-xs text-accent hover:underline">Restore</button></div><div class="text-xs text-dim">4 Nov 2026, 6:40 pm · 112 pp</div></li>
+      </ul>
+      <!-- Empty: <p class="text-sm text-muted">No drafts yet. “Save draft” keeps a copy you can return to.</p> -->
+    </aside>
+
+    <aside data-panel="report" hidden class="w-[26rem] max-w-full shrink-0 overflow-y-auto border-l border-line bg-bg-2 max-md:fixed max-md:inset-0 max-md:z-40 max-md:w-full" aria-label="Script report">
+      <div class="sticky top-0 z-10 flex items-center justify-between border-b border-line bg-bg-2/95 px-5 py-3 backdrop-blur">
+        <div><div class="text-xs text-dim">Script intelligence</div><h2 class="font-display text-2xl leading-tight">Confidence report</h2></div>
+        <div class="flex items-center gap-3">
+          <button data-panel-close class="text-sm text-muted hover:text-fg md:hidden">Close</button>
+          <button data-reveal="#model-settings" class="max-w-36 truncate rounded border border-line bg-panel px-2 py-1.5 text-xs text-muted hover:border-accent">claude-sonnet-5</button>
+          <button class="rounded bg-accent px-3 py-1.5 text-sm font-medium text-bg disabled:opacity-60">Re-analyse</button>
+        </div>
+      </div>
+      <div class="space-y-6 p-5">
+        <div id="model-settings" hidden><div class="space-y-2 rounded-xl border border-line bg-panel p-4">
+          <div class="mb-3"><p class="text-sm font-semibold text-accent">AI model &amp; key</p><p class="mt-1 text-xs leading-5 text-dim">Use the model company’s key directly, or switch to a gateway.</p></div>
+          <select class="mt-[.35rem] w-full rounded-lg border border-line bg-panel px-[.7rem] py-[.65rem] text-sm text-fg outline-none focus:border-accent" aria-label="AI model"><option>Anthropic · Claude Opus 5.5 — Richest development notes</option><option selected>Anthropic · Claude Sonnet 5 — Balanced speed and craft</option><option>OpenAI · Astra — Deep reasoning · premium</option><option>Google · Gemini 2.5 Flash — Stable · fast · long context</option><option>Google · Gemini 2.5 Pro — Long-form reasoning</option><option>Groq · Kimi K2 Instruct — Fast · structured analysis</option><option>Groq · GPT-OSS 120B — Large open model</option></select>
+          <div class="relative"><input type="password" placeholder="Anthropic API key" autocomplete="off" spellcheck="false" class="w-full rounded-lg border border-line bg-panel px-[.7rem] py-[.65rem] pr-16 text-sm text-fg outline-none focus:border-accent" aria-label="API key"><span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted">Show</span></div>
+          <p class="text-[11px] leading-5 text-dim">Kept in this tab only. Sent directly for this request and never saved with your script.</p>
+        </div></div>
+        <!-- Progress while running: <div class="rounded-lg border border-accent/40 bg-accent/5 p-3 text-sm">…</div> -->
+        <a href="report.html" class="flex items-center justify-between rounded-xl border border-ink px-4 py-3 text-sm font-medium text-ink hover:bg-ink hover:text-paper">Open the full report<span class="font-normal opacity-70">Every chapter, printable</span></a>
+
+        <section class="rounded-xl border border-line bg-panel p-4">
+          <div class="flex items-end justify-between">
+            <div><div class="text-sm font-semibold" style="color:var(--good)">Proceed</div><div class="font-display text-6xl leading-none">76</div></div>
+            <div class="font-mono text-sm text-good">▲ 4 vs last draft</div>
+          </div>
+          <p class="mt-3 text-[15px] leading-snug">A taut monsoon thriller whose second half earns its interval twist. Trim the middle and it is ready to pitch.</p>
+          <p class="mt-2 text-sm italic text-muted">A tea-shop owner’s night is undone when his runaway wife steps off the last ferry.</p>
+          <div class="mt-4 space-y-1">
+            <div class="text-xs text-dim">Signal ledger · 10 dimensions</div>
+          <details>
+            <summary class="flex w-full cursor-pointer list-none items-center gap-2 py-1 text-left text-sm">
+              <span class="w-36 shrink-0 truncate text-muted">Emotional impact</span>
+              <span class="h-1.5 flex-1 rounded bg-line"><span class="block h-full rounded" style="width:88%;background:var(--good)"></span></span>
+              <span class="w-7 text-right font-mono text-xs">88</span>
+            </summary>
+            <div class="mb-2 rounded bg-bg-2 p-3 text-sm">
+              <p class="text-fg/90">Gauri’s return lands because we saw what she burned.</p>
+              <ul class="mt-2 space-y-1"><li class="text-muted"><button class="font-mono text-xs text-accent hover:underline">Sc.14 · p38</button></li></ul>
+            </div>
+          </details>
+          <details>
+            <summary class="flex w-full cursor-pointer list-none items-center gap-2 py-1 text-left text-sm">
+              <span class="w-36 shrink-0 truncate text-muted">Concept strength</span>
+              <span class="h-1.5 flex-1 rounded bg-line"><span class="block h-full rounded" style="width:84%;background:var(--good)"></span></span>
+              <span class="w-7 text-right font-mono text-xs">84</span>
+            </summary>
+            <div class="mb-2 rounded bg-bg-2 p-3 text-sm">
+              <p class="text-fg/90">One night, one tea shop, one ferry that isn’t coming.</p>
+              <ul class="mt-2 space-y-1"><li class="text-muted"><button class="font-mono text-xs text-accent hover:underline">Sc.1 · p1</button></li></ul>
+            </div>
+          </details>
+          <details>
+            <summary class="flex w-full cursor-pointer list-none items-center gap-2 py-1 text-left text-sm">
+              <span class="w-36 shrink-0 truncate text-muted">Setups & payoffs</span>
+              <span class="h-1.5 flex-1 rounded bg-line"><span class="block h-full rounded" style="width:81%;background:var(--good)"></span></span>
+              <span class="w-7 text-right font-mono text-xs">81</span>
+            </summary>
+            <div class="mb-2 rounded bg-bg-2 p-3 text-sm">
+              <p class="text-fg/90">The envelope, the cup and the ferry bell all return.</p>
+              <ul class="mt-2 space-y-1"><li class="text-muted"><button class="font-mono text-xs text-accent hover:underline">Sc.48 · p97</button></li></ul>
+            </div>
+          </details>
+          <details>
+            <summary class="flex w-full cursor-pointer list-none items-center gap-2 py-1 text-left text-sm">
+              <span class="w-36 shrink-0 truncate text-muted">Structure</span>
+              <span class="h-1.5 flex-1 rounded bg-line"><span class="block h-full rounded" style="width:78%;background:var(--good)"></span></span>
+              <span class="w-7 text-right font-mono text-xs">78</span>
+            </summary>
+            <div class="mb-2 rounded bg-bg-2 p-3 text-sm">
+              <p class="text-fg/90">The interval turn is the strongest scene of the first half.</p>
+              <ul class="mt-2 space-y-1"><li class="text-muted"><button class="font-mono text-xs text-accent hover:underline">Sc.31 · p62</button></li></ul>
+            </div>
+          </details>
+          <details>
+            <summary class="flex w-full cursor-pointer list-none items-center gap-2 py-1 text-left text-sm">
+              <span class="w-36 shrink-0 truncate text-muted">Character depth</span>
+              <span class="h-1.5 flex-1 rounded bg-line"><span class="block h-full rounded" style="width:74%;background:var(--good)"></span></span>
+              <span class="w-7 text-right font-mono text-xs">74</span>
+            </summary>
+            <div class="mb-2 rounded bg-bg-2 p-3 text-sm">
+              <p class="text-fg/90">Ravi’s pride is specific; Mani is still a function.</p>
+              <ul class="mt-2 space-y-1"><li class="text-muted"><button class="font-mono text-xs text-accent hover:underline">Sc.22 · p44</button></li></ul>
+            </div>
+          </details>
+          <details>
+            <summary class="flex w-full cursor-pointer list-none items-center gap-2 py-1 text-left text-sm">
+              <span class="w-36 shrink-0 truncate text-muted">Market viability</span>
+              <span class="h-1.5 flex-1 rounded bg-line"><span class="block h-full rounded" style="width:72%;background:var(--good)"></span></span>
+              <span class="w-7 text-right font-mono text-xs">72</span>
+            </summary>
+            <div class="mb-2 rounded bg-bg-2 p-3 text-sm">
+              <p class="text-fg/90">Contained budget, festival-season release shape.</p>
+              <ul class="mt-2 space-y-1"><li class="text-muted"><button class="font-mono text-xs text-accent hover:underline">Sc.1 · p1</button></li></ul>
+            </div>
+          </details>
+          <details>
+            <summary class="flex w-full cursor-pointer list-none items-center gap-2 py-1 text-left text-sm">
+              <span class="w-36 shrink-0 truncate text-muted">Dialogue cohesion</span>
+              <span class="h-1.5 flex-1 rounded bg-line"><span class="block h-full rounded" style="width:64%;background:var(--warn)"></span></span>
+              <span class="w-7 text-right font-mono text-xs">64</span>
+            </summary>
+            <div class="mb-2 rounded bg-bg-2 p-3 text-sm">
+              <p class="text-fg/90">Ravi and Mani sound alike in the second half.</p>
+              <ul class="mt-2 space-y-1"><li class="text-muted"><button class="font-mono text-xs text-accent hover:underline">Sc.36 · p71</button></li></ul>
+            </div>
+          </details>
+          <details>
+            <summary class="flex w-full cursor-pointer list-none items-center gap-2 py-1 text-left text-sm">
+              <span class="w-36 shrink-0 truncate text-muted">Overall pace</span>
+              <span class="h-1.5 flex-1 rounded bg-line"><span class="block h-full rounded" style="width:58%;background:var(--warn)"></span></span>
+              <span class="w-7 text-right font-mono text-xs">58</span>
+            </summary>
+            <div class="mb-2 rounded bg-bg-2 p-3 text-sm">
+              <p class="text-fg/90">Pages 88 to 97 repeat information the audience has.</p>
+              <ul class="mt-2 space-y-1"><li class="text-muted"><button class="font-mono text-xs text-accent hover:underline">Sc.41 · p88</button></li></ul>
+            </div>
+          </details>
+          <details>
+            <summary class="flex w-full cursor-pointer list-none items-center gap-2 py-1 text-left text-sm">
+              <span class="w-36 shrink-0 truncate text-muted">Originality</span>
+              <span class="h-1.5 flex-1 rounded bg-line"><span class="block h-full rounded" style="width:55%;background:var(--warn)"></span></span>
+              <span class="w-7 text-right font-mono text-xs">55</span>
+            </summary>
+            <div class="mb-2 rounded bg-bg-2 p-3 text-sm">
+              <p class="text-fg/90">The return-at-night premise is familiar; the ferry is not.</p>
+              <ul class="mt-2 space-y-1"><li class="text-muted"><button class="font-mono text-xs text-accent hover:underline">Sc.44 · p90</button></li></ul>
+            </div>
+          </details>
+          <details>
+            <summary class="flex w-full cursor-pointer list-none items-center gap-2 py-1 text-left text-sm">
+              <span class="w-36 shrink-0 truncate text-muted">Cut tension</span>
+              <span class="h-1.5 flex-1 rounded bg-line"><span class="block h-full rounded" style="width:46%;background:var(--bad)"></span></span>
+              <span class="w-7 text-right font-mono text-xs">46</span>
+            </summary>
+            <div class="mb-2 rounded bg-bg-2 p-3 text-sm">
+              <p class="text-fg/90">Three scenes in a row end on the same beat.</p>
+              <ul class="mt-2 space-y-1"><li class="text-muted"><button class="font-mono text-xs text-accent hover:underline">Sc.39 · p84</button></li></ul>
+            </div>
+          </details>
+          </div>
+          <div class="mt-4 grid gap-3 text-sm sm:grid-cols-2">
+            <div><div class="mb-1 text-sm font-semibold" style="color:var(--good)">Works</div><ul class="space-y-1.5"><li class="text-muted"><button class="font-mono text-xs text-accent hover:underline">Sc.14 · p38</button> Gauri’s return lands because we saw what she burned.</li></ul></div>
+            <div><div class="mb-1 text-sm font-semibold" style="color:var(--bad)">Risks</div><ul class="space-y-1.5"><li class="text-muted"><button class="font-mono text-xs text-accent hover:underline">Sc.41 · p88</button> Pages 88 to 97 repeat information the audience has.</li></ul></div>
+          </div>
+        </section>
+
+        <section>
+          <div class="mb-3"><div class="text-xs text-dim">Measured</div><h3 class="font-display text-xl">Runtime &amp; shape</h3></div>
+          <div class="grid grid-cols-3 gap-2"><div class="rounded-lg border border-line bg-panel px-3 py-2"><div class="font-display text-2xl leading-none">148m</div><div class="mt-1 text-[10px] uppercase tracking-wider text-dim">Runtime</div></div><div class="rounded-lg border border-line bg-panel px-3 py-2"><div class="font-display text-2xl leading-none">112</div><div class="mt-1 text-[10px] uppercase tracking-wider text-dim">Pages</div></div><div class="rounded-lg border border-line bg-panel px-3 py-2"><div class="font-display text-2xl leading-none">58</div><div class="mt-1 text-[10px] uppercase tracking-wider text-dim">Scenes</div></div></div>
+          <p class="mt-3 text-sm text-muted">Midpoint falls after <button class="font-mono text-xs text-accent hover:underline">Sc.31 · p62</button> at ~71 min.</p>
+          <div class="mt-4"><svg viewBox="0 0 300 80" class="block w-full overflow-visible" role="img" aria-label="Tension across the running time">
+            <line x1="0" x2="300" y1="70" y2="70" stroke="var(--line)"/>
+            <line x1="143.9189189189189" x2="143.9189189189189" y1="2" y2="70" stroke="var(--fg)" stroke-opacity=".4" stroke-dasharray="3 3"/>
+            <polyline points="0.0,58.0 16.2,50.8 30.4,43.6 44.6,48.4 60.8,40.0 77.0,42.4 91.2,32.8 105.4,37.6 117.6,41.2 129.7,29.2 143.9,19.6 154.1,38.8 170.3,42.4 182.4,45.4 194.6,43.6 210.8,35.2 225.0,28.6 239.2,22.0 251.4,13.6 263.5,24.4 275.7,17.2 287.8,34.0 300.0,47.2" fill="none" stroke="var(--accent)" stroke-width="1.6" stroke-linejoin="round"/>
+          </svg></div>
+        </section>
+
+        <section>
+          <div class="mb-3"><div class="text-xs text-dim">Continuity</div><h3 class="font-display text-xl">Plot holes · 3</h3></div>
+          <ul class="space-y-2">
+            <li class="rounded border border-line p-3 text-sm">
+              <div class="mb-1 flex items-center gap-2 text-[10px] uppercase tracking-wider"><span style="color:var(--bad)">high</span><span class="text-dim">continuity</span></div>
+              <p class="text-fg/90">Gauri burned this envelope on the jetty. In the tea shop it’s back, seal intact.</p>
+              <div class="mt-1 flex flex-wrap gap-2 text-xs"><button class="font-mono text-xs text-accent hover:underline">Scenes 1 and 14</button></div>
+            </li>
+            <li class="rounded border border-line p-3 text-sm">
+              <div class="mb-1 flex items-center gap-2 text-[10px] uppercase tracking-wider"><span style="color:var(--warn)">medium</span><span class="text-dim">continuity</span></div>
+              <p class="text-fg/90">Ravi knows the ferry is cancelled before Mani tells anyone.</p>
+              <div class="mt-1 flex flex-wrap gap-2 text-xs"><button class="font-mono text-xs text-accent hover:underline">Scene 36</button></div>
+            </li>
+            <li class="rounded border border-line p-3 text-sm">
+              <div class="mb-1 flex items-center gap-2 text-[10px] uppercase tracking-wider"><span style="color:var(--warn)">medium</span><span class="text-dim">continuity</span></div>
+              <p class="text-fg/90">The ferry bell is set up twice and never rung.</p>
+              <div class="mt-1 flex flex-wrap gap-2 text-xs"><button class="font-mono text-xs text-accent hover:underline">Scenes 5 and 27</button></div>
+            </li>
+          </ul>
+        </section>
+
+        <section>
+          <div class="mb-3"><div class="text-xs text-dim">Measured</div><h3 class="font-display text-xl">Characters</h3></div>
+          <ul class="space-y-1.5">
+            <li class="text-sm">
+              <div class="flex items-baseline justify-between gap-2"><span class="truncate">RAVI</span><span class="shrink-0 font-mono text-[11px] text-dim">44 sc · 43%</span></div>
+              <div class="mt-0.5 h-1 rounded bg-line"><div class="h-full rounded bg-muted" style="width:86%"></div></div>
+            </li>
+            <li class="text-sm">
+              <div class="flex items-baseline justify-between gap-2"><span class="truncate">GAURI</span><span class="shrink-0 font-mono text-[11px] text-dim">33 sc · 34%</span></div>
+              <div class="mt-0.5 h-1 rounded bg-line"><div class="h-full rounded bg-muted" style="width:67.5%"></div></div>
+            </li>
+            <li class="text-sm">
+              <div class="flex items-baseline justify-between gap-2"><span class="truncate">MANI</span><span class="shrink-0 font-mono text-[11px] text-dim">22 sc · 23%</span></div>
+              <div class="mt-0.5 h-1 rounded bg-line"><div class="h-full rounded bg-muted" style="width:46.5%"></div></div>
+            </li>
+            <li class="text-sm">
+              <div class="flex items-baseline justify-between gap-2"><span class="truncate">AMMA</span><span class="shrink-0 font-mono text-[11px] text-dim">7 sc · 8%</span></div>
+              <div class="mt-0.5 h-1 rounded bg-line"><div class="h-full rounded bg-muted" style="width:15%"></div></div>
+            </li>
+            <li class="text-sm">
+              <div class="flex items-baseline justify-between gap-2"><span class="truncate">THE BOY</span><span class="shrink-0 font-mono text-[11px] text-dim">8 sc · 9%</span></div>
+              <div class="mt-0.5 h-1 rounded bg-line"><div class="h-full rounded bg-muted" style="width:17%"></div></div>
+            </li>
+          </ul>
+          <div class="mt-4">
+            <div class="mb-1 text-xs uppercase tracking-wider text-accent">Dialogue collision</div>
+            <p class="text-sm text-muted"><span class="text-fg">RAVI</span> and <span class="text-fg">MANI</span> sound 81% alike — they could swap lines unnoticed.</p>
+          </div>
+        </section>
+
+        <section>
+          <div class="mb-3"><div class="text-xs text-dim">Highest leverage changes</div><h3 class="font-display text-xl">Rewrite priorities</h3></div>
+          <ol class="space-y-2">
+            <li class="rounded-lg border border-line bg-panel p-3">
+              <p class="text-xs uppercase tracking-widest text-accent">01 · Cut the second argument</p>
+              <p class="mt-2 text-sm leading-6 text-fg/90"><b>Action:</b> Scene 42 restates scene 22. Cut it, and move its one new line into scene 44.</p>
+              <div class="mt-2 flex gap-2"><button class="font-mono text-xs text-accent hover:underline">Scenes 22, 42, 44</button></div>
+            </li>
+            <li class="rounded-lg border border-line bg-panel p-3">
+              <p class="text-xs uppercase tracking-widest text-accent">02 · Give Mani his own voice</p>
+              <p class="mt-2 text-sm leading-6 text-fg/90"><b>Action:</b> He speaks in Ravi’s rhythm. Make him loud where Ravi is clipped, and let him joke when he’s scared.</p>
+              <div class="mt-2 flex gap-2"><button class="font-mono text-xs text-accent hover:underline">Scenes 18, 36, 47</button></div>
+            </li>
+            <li class="rounded-lg border border-line bg-panel p-3">
+              <p class="text-xs uppercase tracking-widest text-accent">03 · Ring the bell</p>
+              <p class="mt-2 text-sm leading-6 text-fg/90"><b>Action:</b> Pay off the ferry bell at dawn instead of the added line of dialogue.</p>
+              <div class="mt-2 flex gap-2"><button class="font-mono text-xs text-accent hover:underline">Scenes 5, 27, 48</button></div>
+            </li>
+          </ol>
+        </section>
+
+        <section>
+          <div class="mb-3"><div class="text-xs text-dim">Prediction, not legal advice</div><h3 class="font-display text-xl">Certification · India</h3></div>
+          <div class="mb-3 flex items-baseline gap-3"><span class="font-display text-4xl">UA 13+</span><span class="text-xs text-dim">CBFC band from 10 content dimensions</span></div>
+          <ul class="space-y-1">
+            <li class="flex items-center gap-2 text-sm">
+              <span class="w-32 shrink-0 text-muted">Violence</span>
+              <span class="flex gap-0.5"><span class="h-2.5 w-2.5 rounded-sm" style="background:var(--accent-2)"></span><span class="h-2.5 w-2.5 rounded-sm" style="background:var(--accent-2)"></span><span class="h-2.5 w-2.5 rounded-sm" style="background:var(--accent-2)"></span><span class="h-2.5 w-2.5 rounded-sm" style="background:var(--line)"></span><span class="h-2.5 w-2.5 rounded-sm" style="background:var(--line)"></span></span>
+              <span class="flex flex-wrap gap-1 text-xs"><button class="font-mono text-xs text-accent hover:underline">Scenes 44, 48</button></span>
+            </li>
+            <li class="flex items-center gap-2 text-sm">
+              <span class="w-32 shrink-0 text-muted">Threat & horror</span>
+              <span class="flex gap-0.5"><span class="h-2.5 w-2.5 rounded-sm" style="background:var(--accent-2)"></span><span class="h-2.5 w-2.5 rounded-sm" style="background:var(--accent-2)"></span><span class="h-2.5 w-2.5 rounded-sm" style="background:var(--accent-2)"></span><span class="h-2.5 w-2.5 rounded-sm" style="background:var(--line)"></span><span class="h-2.5 w-2.5 rounded-sm" style="background:var(--line)"></span></span>
+              <span class="flex flex-wrap gap-1 text-xs"><button class="font-mono text-xs text-accent hover:underline">Scene 39</button></span>
+            </li>
+            <li class="flex items-center gap-2 text-sm">
+              <span class="w-32 shrink-0 text-muted">Language</span>
+              <span class="flex gap-0.5"><span class="h-2.5 w-2.5 rounded-sm" style="background:var(--accent-2)"></span><span class="h-2.5 w-2.5 rounded-sm" style="background:var(--accent-2)"></span><span class="h-2.5 w-2.5 rounded-sm" style="background:var(--line)"></span><span class="h-2.5 w-2.5 rounded-sm" style="background:var(--line)"></span><span class="h-2.5 w-2.5 rounded-sm" style="background:var(--line)"></span></span>
+              <span class="flex flex-wrap gap-1 text-xs"><button class="font-mono text-xs text-accent hover:underline">Scene 36</button></span>
+            </li>
+            <li class="flex items-center gap-2 text-sm">
+              <span class="w-32 shrink-0 text-muted">Drugs & alcohol</span>
+              <span class="flex gap-0.5"><span class="h-2.5 w-2.5 rounded-sm" style="background:var(--accent-2)"></span><span class="h-2.5 w-2.5 rounded-sm" style="background:var(--line)"></span><span class="h-2.5 w-2.5 rounded-sm" style="background:var(--line)"></span><span class="h-2.5 w-2.5 rounded-sm" style="background:var(--line)"></span><span class="h-2.5 w-2.5 rounded-sm" style="background:var(--line)"></span></span>
+              <span class="flex flex-wrap gap-1 text-xs"><button class="font-mono text-xs text-accent hover:underline">Scene 12</button></span>
+            </li>
+          </ul>
+        </section>
+
+        <p class="rounded-lg border border-dashed border-line-2 p-4 text-sm text-muted" hidden>Run analysis for the verdict, dimension scores with page-cited evidence, the tension curve, plot holes and a certificate prediction. Your script is read in memory and never used for training.</p>
+        <p class="text-[11px] text-dim">Analysed 4 Nov 2026, 6:42 pm · 3 runs on this script</p>
+      </div>
+    </aside>
+
+    <aside data-panel="structure" hidden class="w-[24rem] shrink-0 overflow-y-auto border-l border-line bg-bg-2 p-4 max-md:fixed max-md:inset-0 max-md:z-40 max-md:w-full" aria-label="Structure">
+      <div class="mb-3 flex items-center justify-between"><h2 class="font-display text-2xl">Structure</h2><button data-panel-close class="text-sm text-muted hover:text-fg">Close</button></div>
+      <label class="block text-xs text-dim" for="structure-book">Building on</label>
+      <select id="structure-book" class="mt-1 w-full rounded-lg border border-line bg-panel px-[.7rem] py-[.65rem] text-sm text-fg outline-none focus:border-accent"><option value="save-the-cat">Save the Cat: Fifteen beats with page targets</option><option value="syd-field">Syd Field: Three acts held by two plot points</option><option value="mckee">McKee: Every scene turns a value</option><option value="truby">Truby: Seven steps of the hero's growth</option><option value="heros-journey">Hero's Journey: Twelve stages, out and back</option><option value="story-circle">Story Circle: Eight steps in a circle</option><option value="goal-conflict">Goal and Conflict: Every scene fights for the hero's goal</option></select>
+      <p class="mt-2 text-[13px] leading-relaxed text-muted">A beat sheet with a job for every stretch of the script, from the opening image to the final one. It is strict about placement, which makes it the easiest structure to check a draft against.</p>
+      <p class="mt-1 text-xs text-dim">Blake Snyder, Save the Cat! (2005)</p>
+      <div class="mt-4 flex items-end gap-3">
+        <label class="block text-xs text-dim">Aiming for
+          <span class="mt-1 flex items-center gap-2 text-sm text-fg"><input type="number" min="10" max="250" value="112" class="w-20 rounded-lg border border-line bg-panel px-[.7rem] py-[.65rem] text-sm text-fg outline-none focus:border-accent"> pages</span>
+        </label>
+        <p class="pb-2 text-xs text-dim">Targets stretch to this length. Interval around p. 56.</p>
+      </div>
+      <div class="mt-5" aria-hidden="true">
+        <div class="relative h-9">
+          <div class="absolute inset-x-0 top-4 h-1.5 rounded-full bg-line"></div>
+          <div class="absolute left-0 top-4 h-1.5 rounded-full bg-accent/35" style="width:33.92857142857143%"></div>
+          <div class="absolute top-2 h-5 w-px bg-fg/40" style="left:50%" title="Interval"></div>
+            <span title="Opening Image: p. 1" class="absolute top-[13px] h-3 w-3 -translate-x-1/2 rounded-full border-2 bg-panel" style="left:0.8928571428571428%;border-color:var(--good);background:var(--good)"></span>
+            <span title="Theme Stated: p. 6" class="absolute top-[13px] h-3 w-3 -translate-x-1/2 rounded-full border-2 bg-panel" style="left:5.357142857142857%;border-color:var(--bad);"></span>
+            <span title="Set-up: p. 1" class="absolute top-[13px] h-3 w-3 -translate-x-1/2 rounded-full border-2 bg-panel" style="left:0.8928571428571428%;border-color:var(--good);background:var(--good)"></span>
+            <span title="Catalyst: p. 11" class="absolute top-[13px] h-3 w-3 -translate-x-1/2 rounded-full border-2 bg-panel" style="left:9.821428571428571%;border-color:var(--good);background:var(--good)"></span>
+            <span title="Debate: p. 13" class="absolute top-[13px] h-3 w-3 -translate-x-1/2 rounded-full border-2 bg-panel" style="left:11.607142857142858%;border-color:var(--good);background:var(--good)"></span>
+            <span title="Break into Two: p. 22" class="absolute top-[13px] h-3 w-3 -translate-x-1/2 rounded-full border-2 bg-panel" style="left:19.642857142857142%;border-color:var(--good);background:var(--good)"></span>
+            <span title="B Story: p. 25" class="absolute top-[13px] h-3 w-3 -translate-x-1/2 rounded-full border-2 bg-panel" style="left:22.321428571428573%;border-color:var(--good);background:var(--good)"></span>
+            <span title="Fun and Games: p. 28" class="absolute top-[13px] h-3 w-3 -translate-x-1/2 rounded-full border-2 bg-panel" style="left:25%;border-color:var(--good);background:var(--good)"></span>
+            <span title="Midpoint: p. 56" class="absolute top-[13px] h-3 w-3 -translate-x-1/2 rounded-full border-2 bg-panel" style="left:50%;border-color:var(--warn);"></span>
+            <span title="Bad Guys Close In: p. 62" class="absolute top-[13px] h-3 w-3 -translate-x-1/2 rounded-full border-2 bg-panel" style="left:55.35714285714286%;border-color:var(--dim);"></span>
+            <span title="All Is Lost: p. 84" class="absolute top-[13px] h-3 w-3 -translate-x-1/2 rounded-full border-2 bg-panel" style="left:75%;border-color:var(--dim);"></span>
+            <span title="Dark Night of the Soul: p. 86" class="absolute top-[13px] h-3 w-3 -translate-x-1/2 rounded-full border-2 bg-panel" style="left:76.78571428571429%;border-color:var(--dim);"></span>
+            <span title="Break into Three: p. 90" class="absolute top-[13px] h-3 w-3 -translate-x-1/2 rounded-full border-2 bg-panel" style="left:80.35714285714286%;border-color:var(--dim);"></span>
+            <span title="Finale: p. 92" class="absolute top-[13px] h-3 w-3 -translate-x-1/2 rounded-full border-2 bg-panel" style="left:82.14285714285714%;border-color:var(--dim);"></span>
+            <span title="Final Image: p. 112" class="absolute top-[13px] h-3 w-3 -translate-x-1/2 rounded-full border-2 bg-panel" style="left:100%;border-color:var(--dim);"></span>
+          <span class="absolute -top-0.5 -translate-x-1/2 font-mono text-[10px] text-accent-2" style="left:33.92857142857143%">▼</span>
+        </div>
+        <div class="flex justify-between font-mono text-[10px] text-dim"><span>p. 1</span><span>You are on p. 38</span><span>p. 112</span></div>
+      </div>
+      <ol class="mt-5 space-y-2">
+        <li class="rounded-lg border bg-panel p-3 border-line">
+          <div class="flex items-baseline justify-between gap-2"><span class="font-medium text-fg">Opening Image</span><span class="shrink-0 font-mono text-xs text-dim">p. 1</span></div>
+          <p class="mt-0.5 text-xs" style="color:var(--good)">On time <button class="text-accent hover:underline">scene 1, p. 1</button><span class="text-dim">, from the last report</span></p>
+          
+          <div class="mt-2 flex gap-3 text-xs"><button class="text-accent hover:underline">This is scene 4</button></div>
+        </li>
+        <li class="rounded-lg border bg-panel p-3 border-line-2">
+          <div class="flex items-baseline justify-between gap-2"><span class="font-medium text-fg">Theme Stated</span><span class="shrink-0 font-mono text-xs text-dim">p. 6</span></div>
+          <p class="mt-0.5 text-xs" style="color:var(--bad)">Overdue</p>
+          <p class="mt-1.5 text-[13px] leading-snug text-muted">Who says, early and in passing, what this film is really about?</p>
+          <div class="mt-2 flex gap-3 text-xs"><button class="text-accent hover:underline">This is scene 4</button></div>
+        </li>
+        <li class="rounded-lg border bg-panel p-3 border-line">
+          <div class="flex items-baseline justify-between gap-2"><span class="font-medium text-fg">Set-up</span><span class="shrink-0 font-mono text-xs text-dim">p. 1</span></div>
+          <p class="mt-0.5 text-xs" style="color:var(--good)">On time <button class="text-accent hover:underline">scene 1, p. 1</button><span class="text-dim">, from the last report</span></p>
+          
+          <div class="mt-2 flex gap-3 text-xs"><button class="text-accent hover:underline">This is scene 4</button></div>
+        </li>
+        <li class="rounded-lg border bg-panel p-3 border-line">
+          <div class="flex items-baseline justify-between gap-2"><span class="font-medium text-fg">Catalyst</span><span class="shrink-0 font-mono text-xs text-dim">p. 11</span></div>
+          <p class="mt-0.5 text-xs" style="color:var(--good)">On time <button class="text-accent hover:underline">scene 1, p. 1</button><span class="text-dim">, from the last report</span></p>
+          
+          <div class="mt-2 flex gap-3 text-xs"><button class="text-accent hover:underline">This is scene 4</button></div>
+        </li>
+        <li class="rounded-lg border bg-panel p-3 border-line">
+          <div class="flex items-baseline justify-between gap-2"><span class="font-medium text-fg">Debate</span><span class="shrink-0 font-mono text-xs text-dim">p. 13</span></div>
+          <p class="mt-0.5 text-xs" style="color:var(--good)">On time <button class="text-accent hover:underline">scene 1, p. 1</button><span class="text-dim">, from the last report</span></p>
+          
+          <div class="mt-2 flex gap-3 text-xs"><button class="text-accent hover:underline">This is scene 4</button></div>
+        </li>
+        <li class="rounded-lg border bg-panel p-3 border-line">
+          <div class="flex items-baseline justify-between gap-2"><span class="font-medium text-fg">Break into Two</span><span class="shrink-0 font-mono text-xs text-dim">p. 22</span></div>
+          <p class="mt-0.5 text-xs" style="color:var(--good)">On time <button class="text-accent hover:underline">scene 1, p. 1</button><span class="text-dim">, from the last report</span></p>
+          
+          <div class="mt-2 flex gap-3 text-xs"><button class="text-accent hover:underline">This is scene 4</button></div>
+        </li>
+        <li class="rounded-lg border bg-panel p-3 border-line">
+          <div class="flex items-baseline justify-between gap-2"><span class="font-medium text-fg">B Story</span><span class="shrink-0 font-mono text-xs text-dim">p. 25</span></div>
+          <p class="mt-0.5 text-xs" style="color:var(--good)">On time <button class="text-accent hover:underline">scene 1, p. 1</button><span class="text-dim">, from the last report</span></p>
+          
+          <div class="mt-2 flex gap-3 text-xs"><button class="text-accent hover:underline">This is scene 4</button></div>
+        </li>
+        <li class="rounded-lg border bg-panel p-3 border-line">
+          <div class="flex items-baseline justify-between gap-2"><span class="font-medium text-fg">Fun and Games</span><span class="shrink-0 font-mono text-xs text-dim">p. 28</span></div>
+          <p class="mt-0.5 text-xs" style="color:var(--good)">On time <button class="text-accent hover:underline">scene 1, p. 1</button><span class="text-dim">, from the last report</span></p>
+          
+          <div class="mt-2 flex gap-3 text-xs"><button class="text-accent hover:underline">This is scene 4</button></div>
+        </li>
+        <li class="rounded-lg border bg-panel p-3 border-line-2">
+          <div class="flex items-baseline justify-between gap-2"><span class="font-medium text-fg">Midpoint</span><span class="shrink-0 font-mono text-xs text-dim">p. 56</span></div>
+          <p class="mt-0.5 text-xs" style="color:var(--warn)">12 pages late</p>
+          <p class="mt-1.5 text-[13px] leading-snug text-muted">Is this a false victory or a false defeat, and what raises the stakes?</p>
+          <div class="mt-2 flex gap-3 text-xs"><button class="text-accent hover:underline">This is scene 4</button></div>
+        </li>
+        <li class="rounded-lg border bg-panel p-3 border-line">
+          <div class="flex items-baseline justify-between gap-2"><span class="font-medium text-fg">Bad Guys Close In</span><span class="shrink-0 font-mono text-xs text-dim">p. 62</span></div>
+          <p class="mt-0.5 text-xs" style="color:var(--dim)">Still to come</p>
+          
+          <div class="mt-2 flex gap-3 text-xs"><button class="text-accent hover:underline">This is scene 4</button></div>
+        </li>
+        <li class="rounded-lg border bg-panel p-3 border-line">
+          <div class="flex items-baseline justify-between gap-2"><span class="font-medium text-fg">All Is Lost</span><span class="shrink-0 font-mono text-xs text-dim">p. 84</span></div>
+          <p class="mt-0.5 text-xs" style="color:var(--dim)">Still to come</p>
+          
+          <div class="mt-2 flex gap-3 text-xs"><button class="text-accent hover:underline">This is scene 4</button></div>
+        </li>
+        <li class="rounded-lg border bg-panel p-3 border-line">
+          <div class="flex items-baseline justify-between gap-2"><span class="font-medium text-fg">Dark Night of the Soul</span><span class="shrink-0 font-mono text-xs text-dim">p. 86</span></div>
+          <p class="mt-0.5 text-xs" style="color:var(--dim)">Still to come</p>
+          
+          <div class="mt-2 flex gap-3 text-xs"><button class="text-accent hover:underline">This is scene 4</button></div>
+        </li>
+        <li class="rounded-lg border bg-panel p-3 border-line">
+          <div class="flex items-baseline justify-between gap-2"><span class="font-medium text-fg">Break into Three</span><span class="shrink-0 font-mono text-xs text-dim">p. 90</span></div>
+          <p class="mt-0.5 text-xs" style="color:var(--dim)">Still to come</p>
+          
+          <div class="mt-2 flex gap-3 text-xs"><button class="text-accent hover:underline">This is scene 4</button></div>
+        </li>
+        <li class="rounded-lg border bg-panel p-3 border-line">
+          <div class="flex items-baseline justify-between gap-2"><span class="font-medium text-fg">Finale</span><span class="shrink-0 font-mono text-xs text-dim">p. 92</span></div>
+          <p class="mt-0.5 text-xs" style="color:var(--dim)">Still to come</p>
+          
+          <div class="mt-2 flex gap-3 text-xs"><button class="text-accent hover:underline">This is scene 4</button></div>
+        </li>
+        <li class="rounded-lg border bg-panel p-3 border-line">
+          <div class="flex items-baseline justify-between gap-2"><span class="font-medium text-fg">Final Image</span><span class="shrink-0 font-mono text-xs text-dim">p. 112</span></div>
+          <p class="mt-0.5 text-xs" style="color:var(--dim)">Still to come</p>
+          
+          <div class="mt-2 flex gap-3 text-xs"><button class="text-accent hover:underline">This is scene 4</button></div>
+        </li>
+      </ol>
+      <p class="mt-4 text-xs leading-relaxed text-dim">Beats you mark follow their scene as you write. Unmarked beats are filled in by the next Analyze, which reads the draft against Save the Cat.</p>
+    </aside>
+
+    <aside data-panel="story" hidden class="story-panel" aria-label="Story">
+      <div class="sticky top-0 z-10 border-b border-line bg-bg-2/95 backdrop-blur">
+        <div class="flex items-center justify-between px-5 pt-3">
+          <h2 class="font-display text-2xl text-ink">Kaattu</h2>
+          <div class="flex items-center gap-3 text-sm">
+            <button data-reveal="#story-ai" class="text-muted hover:text-ink">AI settings</button>
+            <button data-panel-close class="text-muted hover:text-ink">Close</button>
+          </div>
+        </div>
+        <div id="story-ai" hidden class="px-5 pt-2"><div class="space-y-2">
+          
+          <select class="mt-[.35rem] w-full rounded-lg border border-line bg-panel px-[.7rem] py-[.65rem] text-sm text-fg outline-none focus:border-accent" aria-label="AI model"><option>Anthropic · Claude Opus 5.5 — Richest development notes</option><option selected>Anthropic · Claude Sonnet 5 — Balanced speed and craft</option><option>OpenAI · Astra — Deep reasoning · premium</option><option>Google · Gemini 2.5 Flash — Stable · fast · long context</option><option>Google · Gemini 2.5 Pro — Long-form reasoning</option><option>Groq · Kimi K2 Instruct — Fast · structured analysis</option><option>Groq · GPT-OSS 120B — Large open model</option></select>
+          <div class="relative"><input type="password" placeholder="Anthropic API key" autocomplete="off" spellcheck="false" class="w-full rounded-lg border border-line bg-panel px-[.7rem] py-[.65rem] pr-16 text-sm text-fg outline-none focus:border-accent" aria-label="API key"><span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted">Show</span></div>
+          <p class="text-[11px] leading-5 text-dim">Kept in this tab only. Sent directly for this request and never saved with your script.</p>
+        </div></div>
+        <nav data-tabs="story" class="flex gap-1 overflow-x-auto px-3 py-2" aria-label="Story steps">
+          <button data-tab="fragments" aria-current="page" class="shrink-0 rounded-full px-3 py-1 text-sm text-muted hover:text-ink aria-[current=page]:bg-ink aria-[current=page]:text-paper">Fragments</button><button data-tab="story" aria-current="false" class="shrink-0 rounded-full px-3 py-1 text-sm text-muted hover:text-ink aria-[current=page]:bg-ink aria-[current=page]:text-paper">Story</button><button data-tab="beats" aria-current="false" class="shrink-0 rounded-full px-3 py-1 text-sm text-muted hover:text-ink aria-[current=page]:bg-ink aria-[current=page]:text-paper">Beats</button><button data-tab="scenes" aria-current="false" class="shrink-0 rounded-full px-3 py-1 text-sm text-muted hover:text-ink aria-[current=page]:bg-ink aria-[current=page]:text-paper">Scenes</button><button data-tab="notes" aria-current="false" class="shrink-0 rounded-full px-3 py-1 text-sm text-muted hover:text-ink aria-[current=page]:bg-ink aria-[current=page]:text-paper">Notes<span class="ml-1.5 rounded-full bg-accent-2 px-1.5 text-xs text-white">3</span></button><button data-tab="ask" aria-current="false" class="shrink-0 rounded-full px-3 py-1 text-sm text-muted hover:text-ink aria-[current=page]:bg-ink aria-[current=page]:text-paper">Ask</button>
+        </nav>
+        <!-- Status line: <div class="mx-5 mb-3 rounded-lg bg-highlight/40 px-3 py-2 text-sm text-ink" role="status">Reading your script…</div> -->
+      </div>
+      <div class="p-5">
+        <div data-tabs-for="story" data-tab-body="fragments">
+          <p class="mb-4 text-[15px] leading-relaxed text-muted">Drop in whatever you have, in any order: a character, a scene you can already see, the ending, a line someone says. When there’s enough, shape it into a story.</p>
+          <div class="space-y-2 rounded-xl border border-line bg-panel p-3">
+            <select class="w-full rounded-lg border-0 bg-panel px-1 py-1 text-sm text-muted outline-none" aria-label="What kind of fragment"><option>Idea</option><option>Character</option><option>Scene</option><option>Line</option><option>Ending</option></select>
+            <textarea rows="3" placeholder="A tea-shop owner in Alappuzha still keeps his runaway wife’s cup on the shelf…" class="w-full resize-y bg-transparent px-1 text-[15px] leading-relaxed text-ink outline-none placeholder:text-dim" aria-label="Fragment"></textarea>
+            <div class="flex items-center justify-between"><span class="text-xs text-dim">⌘ Enter to add</span><button class="rounded-full border border-line-2 bg-panel px-4 py-2 text-sm text-ink hover:border-ink disabled:cursor-not-allowed disabled:opacity-40">Add fragment</button></div>
+          </div>
+          <ul class="mt-5 space-y-3">
+            <li><div class="mb-1 flex items-center justify-between text-sm"><span class="text-accent-2">Character</span><button class="text-xs text-dim hover:text-bad">Delete</button></div><p class="text-[15px] leading-relaxed text-ink">Ravi, a proud tea-shop owner who never says what he means.</p></li>
+            <li><div class="mb-1 flex items-center justify-between text-sm"><span class="text-accent-2">Ending</span><button class="text-xs text-dim hover:text-bad">Delete</button></div><p class="text-[15px] leading-relaxed text-ink">At dawn he stands in front of the ferry and rings the bell.</p></li>
+          </ul>
+          <button class="rounded-full bg-ink px-5 py-2.5 text-sm font-medium text-paper hover:bg-accent disabled:cursor-not-allowed disabled:opacity-40 mt-6">Shape it into a story</button>
+        </div>
+        <div data-tabs-for="story" data-tab-body="story" hidden><p class="mb-4 text-[15px] leading-relaxed text-muted">Add a few fragments and shape them. The story record appears here for you to edit.</p></div>
+        <div data-tabs-for="story" data-tab-body="beats" hidden>
+          <p class="mb-4 text-[15px] leading-relaxed text-muted">The beat sheet lays the film out around its interval, with songs and mass moments where they carry story. It covers every beat of Save the Cat; change the book in Structure.</p>
+          <button class="rounded-full bg-ink px-5 py-2.5 text-sm font-medium text-paper hover:bg-accent disabled:cursor-not-allowed disabled:opacity-40">Build the beat sheet</button>
+          <div class="mt-5 space-y-2">
+            <div class="rounded-xl border border-line bg-panel px-3 py-2"><p class="font-mono text-xs text-dim">Opening Image</p><p class="mt-0.5 text-[15px] text-ink">A lamp burning over black water.</p></div>
+            <div class="rounded-xl border-ink bg-panel px-3 py-2" style="border:1px solid var(--ink);box-shadow:inset 4px 0 0 var(--ink)"><p class="font-mono text-xs text-dim">Interval</p><p class="mt-0.5 text-[15px] font-semibold text-ink">The name on the envelope.</p></div>
+          </div>
+        </div>
+        <div data-tabs-for="story" data-tab-body="scenes" hidden><p class="mb-4 text-[15px] leading-relaxed text-muted">Build the beat sheet, then break it into scenes. Each card can be drafted into your script.</p></div>
+        <div data-tabs-for="story" data-tab-body="notes" hidden>
+          <p class="mb-4 text-[15px] leading-relaxed text-muted">Continuity notes, checked as you write.</p>
+          <ul class="space-y-4">
+            <li class="border-l-2 py-0.5 pl-3.5" style="border-color:var(--accent-2)"><p class="text-sm font-semibold text-accent-2">Scene 14</p><p class="mt-1 text-[15px] text-ink">Gauri burned this envelope in scene 1. Here it’s back with the seal whole.</p></li>
+            <li class="border-l-2 py-0.5 pl-3.5" style="border-color:var(--accent-2)"><p class="text-sm font-semibold text-accent-2">Scene 36</p><p class="mt-1 text-[15px] text-ink">Ravi knows the ferry is cancelled before Mani tells anyone.</p></li>
+          </ul>
+        </div>
+        <div data-tabs-for="story" data-tab-body="ask" hidden>
+          <p class="mb-4 text-[15px] leading-relaxed text-muted">Ask about your own script, or get ideas for what comes next.</p>
+          <textarea rows="3" placeholder="Where does Mani first lie to Ravi?" class="w-full rounded-lg border border-line bg-panel px-3 py-2 text-[15px] text-ink outline-none placeholder:text-dim focus:border-accent" aria-label="Question"></textarea>
+          <div class="mt-3 flex flex-wrap gap-2"><button class="rounded-full bg-ink px-5 py-2.5 text-sm font-medium text-paper hover:bg-accent disabled:cursor-not-allowed disabled:opacity-40">Ask</button><button class="rounded-full border border-line-2 bg-panel px-4 py-2 text-sm text-ink hover:border-ink disabled:cursor-not-allowed disabled:opacity-40">What happens next?</button><button class="rounded-full border border-line-2 bg-panel px-4 py-2 text-sm text-ink hover:border-ink disabled:cursor-not-allowed disabled:opacity-40">Other ways to say this line</button></div>
+        </div>
+      </div>
+    </aside>
+
+    <aside data-panel="voice" hidden class="story-panel" aria-label="Speak">
+      <div class="sticky top-0 z-10 border-b border-line bg-bg-2/95 backdrop-blur">
+        <div class="flex items-center justify-between px-5 pt-3">
+          <h2 class="font-display text-2xl text-ink">Speak</h2>
+          <div class="flex items-center gap-3 text-sm"><button data-reveal="#voice-ai" class="text-muted hover:text-ink">AI settings</button><button data-panel-close class="text-muted hover:text-ink">Close</button></div>
+        </div>
+        <div id="voice-ai" hidden class="px-5 pt-2"><div class="space-y-2">
+          
+          <select class="mt-[.35rem] w-full rounded-lg border border-line bg-panel px-[.7rem] py-[.65rem] text-sm text-fg outline-none focus:border-accent" aria-label="AI model"><option>Anthropic · Claude Opus 5.5 — Richest development notes</option><option selected>Anthropic · Claude Sonnet 5 — Balanced speed and craft</option><option>OpenAI · Astra — Deep reasoning · premium</option><option>Google · Gemini 2.5 Flash — Stable · fast · long context</option><option>Google · Gemini 2.5 Pro — Long-form reasoning</option><option>Groq · Kimi K2 Instruct — Fast · structured analysis</option><option>Groq · GPT-OSS 120B — Large open model</option></select>
+          <div class="relative"><input type="password" placeholder="Anthropic API key" autocomplete="off" spellcheck="false" class="w-full rounded-lg border border-line bg-panel px-[.7rem] py-[.65rem] pr-16 text-sm text-fg outline-none focus:border-accent" aria-label="API key"><span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted">Show</span></div>
+          <p class="text-[11px] leading-5 text-dim">Kept in this tab only. Sent directly for this request and never saved with your script.</p>
+        </div></div>
+        <nav data-tabs="voice" class="flex gap-1 px-3 py-2" aria-label="Voice mode"><button data-tab="scene" aria-current="page" class="shrink-0 rounded-full px-3 py-1 text-sm text-muted hover:text-ink aria-[current=page]:bg-ink aria-[current=page]:text-paper">Describe a scene</button><button data-tab="typing" aria-current="false" class="shrink-0 rounded-full px-3 py-1 text-sm text-muted hover:text-ink aria-[current=page]:bg-ink aria-[current=page]:text-paper">Voice typing</button></nav>
+      </div>
+      <div class="space-y-5 p-5">
+        <label class="flex items-center justify-between gap-3 text-sm text-muted">I’m speaking in
+          <select class="rounded-full border border-line-2 bg-panel px-3 py-1.5 text-ink"><option value="en">English</option><option value="ta">தமிழ் · Tamil</option><option value="te">తెలుగు · Telugu</option><option value="ml" selected>മലയാളം · Malayalam</option><option value="kn">ಕನ್ನಡ · Kannada</option><option value="hi">हिन्दी · Hindi</option><option value="bn">বাংলা · Bengali</option><option value="gu">ગુજરાતી · Gujarati</option><option value="pa">ਪੰਜਾਬੀ · Punjabi</option><option value="or">ଓଡ଼ିଆ · Odia</option></select>
+        </label>
+        <div data-tabs-for="voice" data-tab-body="scene" class="space-y-5">
+          <p class="text-[15px] leading-relaxed text-muted">Talk the scene through the way you’d tell it to someone: where it is, who’s there, what happens, what they say. Change your mind as you go. Then build it into screenplay form.</p>
+          <button class="flex w-full items-center justify-center gap-3 rounded-2xl border-2 border-ink px-5 py-4 text-base font-medium text-ink hover:bg-ink hover:text-paper"><span class="mic-icon" aria-hidden="true"></span>Start talking</button>
+          <!-- Recording: <button class="flex w-full items-center justify-center gap-3 rounded-2xl bg-accent-2 px-5 py-4 text-base font-medium text-white"><span class="rec-dot"></span>Stop <span class="font-mono text-sm opacity-90">0:12</span></button> -->
+          <textarea rows="6" placeholder="What you say appears here. You can also type or paste a description." class="w-full resize-y rounded-xl border border-line bg-panel p-3 text-[15px] leading-relaxed text-ink outline-none placeholder:text-dim focus:border-accent" aria-label="Transcript"></textarea>
+          <div class="flex flex-wrap gap-2"><button class="rounded-full bg-ink px-5 py-2.5 text-sm font-medium text-paper hover:bg-accent disabled:cursor-not-allowed disabled:opacity-40">Build the scene</button></div>
+
+          <section class="space-y-4 border-t border-line pt-5">
+            <p class="text-sm text-muted">Outside, <span class="text-ink">the ferry jetty</span>, night</p>
+            <ul class="flex flex-wrap gap-2" aria-label="Characters in the scene"><li class="rounded-full border border-line-2 bg-panel px-3 py-1 text-sm text-ink">GAURI</li><li class="rounded-full border border-line-2 bg-panel px-3 py-1 text-sm text-ink">MANI<span class="ml-1.5 text-accent-2">new</span></li></ul>
+            <div class="border-l-2 py-0.5 pl-3.5" style="border-color:var(--accent-2)"><p class="text-sm font-semibold text-accent-2">Decided for you</p><ul class="mt-1 space-y-1 text-[15px] text-ink"><li>It’s raining, since you mentioned the umbrella.</li></ul></div>
+            <div class="sp-preview">
+              <p class="sp-block" data-kind="sceneHeading">EXT. FERRY JETTY - NIGHT</p>
+              <p class="sp-block" data-kind="action">Rain. Gauri waits under a torn umbrella.</p>
+              <p class="sp-block" data-kind="character">MANI</p>
+              <p class="sp-block" data-kind="dialogue">The ferry isn’t coming.</p>
+            </div>
+            <div class="flex flex-wrap gap-2"><button class="rounded-full bg-ink px-5 py-2.5 text-sm font-medium text-paper hover:bg-accent disabled:cursor-not-allowed disabled:opacity-40">Add after the current scene</button><button class="rounded-full border border-line-2 bg-panel px-4 py-2 text-sm text-ink hover:border-ink disabled:cursor-not-allowed disabled:opacity-40">Add at the end</button><button class="rounded-full border border-line-2 bg-panel px-4 py-2 text-sm text-ink hover:border-ink disabled:cursor-not-allowed disabled:opacity-40">Build again</button></div>
+          </section>
+        </div>
+        <div data-tabs-for="voice" data-tab-body="typing" hidden class="space-y-5">
+          <p class="text-[15px] leading-relaxed text-muted">Put your cursor where the words should go, then talk. Each phrase is typed into the script as you finish it.</p>
+          <button class="flex w-full items-center justify-center gap-3 rounded-2xl border-2 border-ink px-5 py-4 text-base font-medium text-ink hover:bg-ink hover:text-paper"><span class="mic-icon" aria-hidden="true"></span>Start voice typing</button>
+          <p class="text-sm text-dim">Last typed: <span class="text-ink">ഞാൻ വരില്ല എന്ന് പറഞ്ഞിട്ടില്ലല്ലോ.</span></p>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Status bar -->
+  <footer class="flex items-center gap-4 border-t border-line bg-bg-2 px-4 py-1.5 font-mono text-[11px] text-dim">
+    <span>112 pages</span>
+    <span>5 scenes</span>
+    <span id="stat-words">0 words</span>
+    <span class="hidden sm:inline" title="Estimated screen time, songs included">≈ 148 min</span>
+    <button data-panel-toggle="structure" aria-pressed="false" class="truncate hover:text-fg" title="Where the draft stands against the structure you chose">Save the Cat: next, Midpoint around p. 56<span class="text-bad">, 1 overdue</span></button>
+    <span class="ml-auto">Saved on this device</span>
+    <span class="hidden lg:inline">Tab changes the element. Enter moves on. Shift+Enter breaks the line.</span>
+  </footer>
+</div>
+<script src="static/js/app.js"></script>
+</body>
+</html>
